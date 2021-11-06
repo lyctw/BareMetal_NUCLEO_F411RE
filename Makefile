@@ -1,6 +1,6 @@
 CC = arm-none-eabi-gcc
 MACH = cortex-m4
-CFLAGS = -c -mcpu=cortex-m4 -mthumb -std=gnu11 -O0 -Wall
+CFLAGS = -c -mcpu=$(MACH) -mthumb -std=gnu11 -O0 -Wall
 LDFLAGS = -nostdlib -T stm32_ls.ld
 
 

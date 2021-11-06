@@ -15,7 +15,8 @@ extern uint32_t _sbss;
 extern uint32_t _ebss;
 
 /* function prototypes of STM32F411xC/E system exception and IRQ handlers */
-/* https://www.st.com/resource/en/reference_manual/dm00119316-stm32f411xc-e-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf */
+/* stm32f411xc-e-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf    */
+/* Table 37. Vector table for STM32F411xC/E                               */
 
 void Reset_Handler(void);
 
