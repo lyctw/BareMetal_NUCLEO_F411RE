@@ -13,7 +13,7 @@ extern uint32_t _la_data;
 
 extern uint32_t _sbss;
 extern uint32_t _ebss;
-int main();
+int main(void);
 
 /* function prototypes of STM32F411xC/E system exception and IRQ handlers */
 /* stm32f411xc-e-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf    */
@@ -173,28 +173,26 @@ void Default_Handler(void)  // Dummy function
 void Reset_Handler(void) 
 {
     // 1. Copy .data section to SRAM
-    // 2. Init the .bss section to zero in SRAM
-    // 3. (Optional.) call init function of std. library
-    // 4. Call main()
-    //copy .data section to SRAM
 	uint32_t size = (uint32_t)&_edata - (uint32_t)&_sdata;
 
-	uint8_t *pDst = (uint8_t*)&_sdata; //sram
+	uint8_t *pDst = (uint8_t*)&_sdata;   //sram
 	uint8_t *pSrc = (uint8_t*)&_la_data; //flash
 
 	for(uint32_t i = 0; i < size; i++){
 		*pDst++ = *pSrc++;
 	}
 
-	//Init. the .bss section to zero in SRAM
+    // 2. Init the .bss section to zero in SRAM
 	size = (uint32_t)&_ebss - (uint32_t)&_sbss;
 	pDst = (uint8_t*)&_sbss;
 	for(uint32_t i = 0; i < size; i++){
 		*pDst++ = 0;
 	}
 
+    // 3. (Optional.) call init function of std. library
 	/* __libc_init_array(); */
 
+    // 4. Call main()
     main();
 
 }

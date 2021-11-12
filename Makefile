@@ -1,6 +1,6 @@
 CC = arm-none-eabi-gcc
 MACH = cortex-m4
-CFLAGS = -c -mcpu=$(MACH) -mthumb -std=gnu11 -O0 -Wall
+CFLAGS = -c -mcpu=$(MACH) -mthumb -std=gnu11 -Og -Wall
 LDFLAGS = -nostdlib -T stm32_ls.ld -Wl,-Map=final.map
 
 all: stm32_startup.o led.o main.o final.elf
@@ -25,3 +25,6 @@ dump:
 
 print-symbol-table:
 	arm-none-eabi-nm final.elf
+
+load:
+	openocd -f st_nucleo_f4.cfg
