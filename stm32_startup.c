@@ -13,13 +13,13 @@ extern uint32_t _la_data;
 
 extern uint32_t _sbss;
 extern uint32_t _ebss;
+int main();
 
 /* function prototypes of STM32F411xC/E system exception and IRQ handlers */
 /* stm32f411xc-e-advanced-arm-based-32-bit-mcus-stmicroelectronics.pdf    */
 /* Table 37. Vector table for STM32F411xC/E                               */
 
 void Reset_Handler(void);
-
 void NMI_Handler 					(void) __attribute__ ((weak, alias("Default_Handler")));
 void HardFault_Handler 				(void) __attribute__ ((weak, alias("Default_Handler")));
 void MemManage_Handler 				(void) __attribute__ ((weak, alias("Default_Handler")));
@@ -182,21 +182,19 @@ void Reset_Handler(void)
 	uint8_t *pDst = (uint8_t*)&_sdata; //sram
 	uint8_t *pSrc = (uint8_t*)&_la_data; //flash
 
-	for(uint32_t i =0 ; i < size ; i++)
-	{
+	for(uint32_t i = 0; i < size; i++){
 		*pDst++ = *pSrc++;
 	}
 
 	//Init. the .bss section to zero in SRAM
 	size = (uint32_t)&_ebss - (uint32_t)&_sbss;
 	pDst = (uint8_t*)&_sbss;
-	for(uint32_t i =0 ; i < size ; i++)
-	{
+	for(uint32_t i = 0; i < size; i++){
 		*pDst++ = 0;
 	}
 
 	/* __libc_init_array(); */
 
-	main();
+    main();
 
 }
