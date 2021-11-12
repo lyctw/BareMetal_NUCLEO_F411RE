@@ -13,6 +13,7 @@ SECTIONS
     *(.isr_vector)
     *(.text)
     *(.rodata)
+    . = ALIGN(4);
     _etext = .;
   }> FLASH 
 
