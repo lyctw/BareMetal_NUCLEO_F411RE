@@ -22,3 +22,6 @@ clean:
 
 dump:
 	arm-none-eabi-objdump -h final.elf
+
+print-symbol-table:
+	arm-none-eabi-nm final.elf
