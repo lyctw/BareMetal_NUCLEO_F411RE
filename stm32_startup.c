@@ -4,6 +4,7 @@
 #define SRAM_SIZE  (128 * 1024U) // 128 KB
 #define SRAM_END   ((SRAM_START) + (SRAM_SIZE))
 
+/* Highest address of the user mode stack */
 #define STACK_START SRAM_END
 
 extern uint32_t _etext;
