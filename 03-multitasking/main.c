@@ -1,9 +1,24 @@
 #include <stdint.h>
 
+/* some stack memory calculations */
+#define SIZE_TASK_STACK          1024U
+#define SIZE_SCHED_STACK         1024U
+
+#define SRAM_START               0x20000000U
+#define SIZE_SRAM                ( (128) * (1024))
+#define SRAM_END                 ((SRAM_START) + (SIZE_SRAM) )
+
+#define T1_STACK_START           SRAM_END
+#define T2_STACK_START           ( (SRAM_END) - (1 * SIZE_TASK_STACK) )
+#define T3_STACK_START           ( (SRAM_END) - (2 * SIZE_TASK_STACK) )
+#define T4_STACK_START           ( (SRAM_END) - (3 * SIZE_TASK_STACK) )
+#define IDLE_STACK_START         ( (SRAM_END) - (4 * SIZE_TASK_STACK) )
+#define SCHED_STACK_START        ( (SRAM_END) - (5 * SIZE_TASK_STACK) )
+
+#define TICK_HZ 1000U
 #define MAX_TASKS 4
 #define HSI_CLOCK         16000000U
 #define SYSTICK_TIM_CLOCK HSI_CLOCK
-#define TICK_HZ 1000
 uint32_t task_handlers[MAX_TASKS];
 uint32_t psp_of_tasks[MAX_TASKS] = {T1_STACK_START,
                                     T2_STACK_START,
@@ -23,6 +38,13 @@ void enable_processor_faults (void)
 
 }
 
+__attribute__((naked)) void init_scheduler_stack(uint32_t sched_top_of_stack)
+{
+     __asm volatile("MSR MSP,%0": :  "r" (sched_top_of_stack)  :   );
+     __asm volatile("BX LR");
+
+}
+
 void init_tasks_stack(void)
 {
 	uint32_t *pPSP;
@@ -33,7 +55,7 @@ void init_tasks_stack(void)
 		*pPSP = 0x01000000;
 
 		pPSP--; // PC
-		*pPSP = task_handler[i];
+		*pPSP = task_handlers[i];
 
 		pPSP--; // LR
 		*pPSP = 0xFFFFFFFD;
@@ -45,7 +67,7 @@ void init_tasks_stack(void)
 		}
 
 		// Preserve value of each PSP
-		psp_of_tasks[i] = (uint_32_t)pPSP;
+		psp_of_tasks[i] = (uint32_t)pPSP;
 	}
 }
 
@@ -55,7 +77,7 @@ void init_systick_timer(uint32_t tick_hz)
 	uint32_t *pSRVR = (uint32_t*)0xE00E014;
 	uint32_t *pSCSR = (uint32_t*)0xE00E010;
 
-	uint32_t count_value = (SYSTICK_TIM_CLOCK / tich_hz) - 1;
+	uint32_t count_value = (SYSTICK_TIM_CLOCK / tick_hz) - 1;
 
 	// Clear the value of SRVR
 	*pSRVR &= ~(0x00FFFFFF);
@@ -73,7 +95,7 @@ uint32_t get_psp_value(void)
     return psp_of_tasks[current_task]; // returnd by R0
 }
 
-__attribute__((naked)) switch_sp_to_psp(void)
+__attribute__((naked)) void switch_sp_to_psp(void)
 {
     // 1. initialize the PSP the with Task1 stack start address
     //    get the value of psp of current task
@@ -111,12 +133,12 @@ int main(void)
 {
     enable_processor_faults();
 
-    int_scheduler_stack(SCHED_STACK_START);
+    init_scheduler_stack(SCHED_STACK_START);
 
-    task_handler[0] = (uint32_t)task1_handler;
-    task_handler[1] = (uint32_t)task2_handler;
-    task_handler[2] = (uint32_t)task3_handler;
-    task_handler[3] = (uint32_t)task4_handler;
+    task_handlers[0] = (uint32_t)task1_handler;
+    task_handlers[1] = (uint32_t)task2_handler;
+    task_handlers[2] = (uint32_t)task3_handler;
+    task_handlers[3] = (uint32_t)task4_handler;
 
     init_tasks_stack();
 
