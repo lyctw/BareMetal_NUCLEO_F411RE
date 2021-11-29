@@ -2,7 +2,7 @@
 source ./env.sh
 
 # OpenOCD commands: https://openocd.org/doc/html/General-Commands.html
-/bin/arm-none-eabi-gdb  -ex "target remote :3333" \
+arm-none-eabi-gdb  -ex "target remote :3333" \
                         -ex "set confirm off" \
                         -ex "set pagination off" \
                         -ex "monitor reset init" \
