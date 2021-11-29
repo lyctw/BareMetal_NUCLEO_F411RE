@@ -200,7 +200,7 @@ int main(void)
 void SysTick_Handler(void) // this will run every 1ms
 {
     g_tick_count++;
-    // For each unblock_tasks 
+    // For each blocked tasks 
     // if a blocked task has reached tick count
     // then make it ready
     for(int i = 1; i< MAX_TASKS; i++)
